@@ -42,7 +42,7 @@ Beyond embedded control, this repository integrates a complete host-side ROS 2 w
 
 | <video height="350" src="https://github.com/Siddharth-33/WALL-E-for-ROS2/releases/download/v1.0.0/imu_tilt_demo.mp4" controls></video> | <video height="350" src="https://github.com/Siddharth-33/WALL-E-for-ROS2/releases/download/v1.0.0/self_balancing_demo.mp4" controls></video> | <video height="350" src="https://github.com/Siddharth-33/WALL-E-for-ROS2/releases/download/v1.0.0/line_following_demo.mp4" controls></video> |
 :-------------------------:|:-------------------------:|:-------------------------:
-**Zero-Latency IMU 3D Tilting**<br>[Watch / Download](https://github.com/Siddharth-33/WALL-E-for-ROS2/releases/download/v1.0.0/imu_tilt_demo.mp4) | **Closed-Loop Self-Balancing**<br>[Watch / Download](https://github.com/Siddharth-33/WALL-E-for-ROS2/releases/download/v1.0.0/self_balancing_demo.mp4) | **High-Speed Line Tracking**<br>[Watch / Download](https://github.com/Siddharth-33/WALL-E-for-ROS2/releases/download/v1.0.0/line_following_demo.mp4)
+**Zero-Latency IMU 3D Tilting**<br>[Watch / Download](https://github.com/user-attachments/assets/987d2e3f-099c-4541-91ce-bebc0dd7a237) | **Closed-Loop Self-Balancing**<br>[Watch / Download](https://github.com/user-attachments/assets/d940ec5d-7354-4c56-9f16-915c9813ffaf) | **High-Speed Line Tracking**<br>[Watch / Download](https://github.com/user-attachments/assets/91a16f9a-931d-49ce-b323-4e0cdabaa48f)
 
 </p>
 
