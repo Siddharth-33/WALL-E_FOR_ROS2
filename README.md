@@ -1,28 +1,56 @@
-# WALL-E: Dual-Mode Self-Balancing & Line-Tracking Autonomous Robot
+<p align="center">
+  <h1 align="center"> WALL-E for ROS 2 </h1>
+  <p align="center">
+    <strong>Dual-Mode Autonomous Self-Balancing & Line-Tracking Mobile Robot with ROS 2 Jazzy & micro-ROS</strong>
+    <br />
+    <br />
+    <a href="https://github.com/Siddharth-33/WALL-E-for-ROS2/releases">Watch Demos</a>
+    ·
+    <a href="#getting-started">Getting Started</a>
+    ·
+    <a href="#system-architecture">Architecture</a>
+    ·
+    <a href="#live-parameter-tuning-interactive-cli">Tuning Guide</a>
+  </p>
+</p>
 
-[![ROS 2](https://img.shields.io/badge/ROS%202-Jazzy%20Jalisco-3498DB?logo=ros)](https://docs.ros.org/en/jazzy/)
-[![ESP-IDF](https://img.shields.io/badge/ESP--IDF-v5.1-E74C3C?logo=espressif)](https://idf.espressif.com/)
-[![micro-ROS](https://img.shields.io/badge/micro--ROS-UDP4-2ECC71)](https://micro.ros.org/)
-[![Hardware](https://img.shields.io/badge/Board-SRA%20ESP32%20v4-F39C12)](https://github.com/SRA-VJTI)
-[![License: MIT](https://img.shields.io/badge/License-MIT-9B59B6.svg)](https://opensource.org/licenses/MIT)
+<p align="center">
+  <a href="https://docs.ros.org/en/jazzy/"><img src="https://img.shields.io/badge/ROS%202-Jazzy%20Jalisco-3498DB?logo=ros" alt="ROS 2"></a>
+  <a href="https://idf.espressif.com/"><img src="https://img.shields.io/badge/ESP--IDF-v5.1-E74C3C?logo=espressif" alt="ESP-IDF"></a>
+  <a href="https://micro.ros.org/"><img src="https://img.shields.io/badge/micro--ROS-UDP4-2ECC71" alt="micro-ROS"></a>
+  <a href="https://github.com/SRA-VJTI"><img src="https://img.shields.io/badge/Board-SRA%20ESP32%20v4-F39C12" alt="SRA Board"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-9B59B6.svg" alt="License"></a>
+</p>
 
-An open-source autonomous mobile robotics platform combining **deterministic embedded control (FreeRTOS on ESP32)** with the **ROS 2 Jazzy ecosystem**. The robot implements a dual-mode control architecture: **two-wheel inverted pendulum balancing** and **three-wheel differential line tracking** with real-time wireless telemetry, dynamic TF frame synchronization in RViz2, and over-the-air (OTA) PID tuning.
+---
+
+## About the Project
+
+**WALL-E for ROS 2** is a modular educational and research robotics platform developed as an advanced evolution of the SRA-VJTI Wall-E robot. It bridges high-rate, deterministic embedded control (**FreeRTOS on ESP32**) directly with the modern **ROS 2 Jazzy** robotics ecosystem using a high-throughput **micro-ROS UDP** wireless transport.
+
+The brain of the robot is an **ESP32 microcontroller** paired with the **custom-made SRA development board**, controlling a dual-mode mobility platform:
+1. **Self-Balancing Inverted Pendulum Mode**: Two-wheel dynamic balance utilizing closed-loop discrete-time PID feedback from an MPU6050 6-DOF IMU sampled at 200 Hz with complementary angle filtering and safety cutoffs.
+2. **Autonomous Line-Following Mode**: High-speed three-wheel differential drive line navigation using a 5-channel TCRT5000 IR sensor array (LSA) on ADC1 with inverted reflectance mapping, weighted centroid error tracking, and differential velocity control.
+
+Beyond embedded control, this repository integrates a complete host-side ROS 2 workspace featuring **zero-latency IMU TF synchronization**, an **interactive high-contrast 3D LSA digital twin in RViz2**, a **live terminal telemetry dashboard**, and an **interactive over-the-air (OTA) CLI tuner** for real-time PID gain updates without reflashing firmware.
 
 ---
 
 ## Video Demonstrations
 
-Full-resolution demonstration videos are available in [GitHub Releases](https://github.com/Siddharth-33/WALL-E-for-ROS2/releases):
+<p align="center">
 
-| Demo | Description | Video Link |
-| :--- | :--- | :--- |
-| **1. Zero-Latency IMU 3D Tilting** | Real-time complementary-filtered pitch/roll streamed over UDP at 100 Hz, driving dynamic TF transforms (`odom -> base_link`) to tilt the 3D URDF model in RViz2 with zero perceptible latency. | [Watch Video (Releases)](https://github.com/Siddharth-33/WALL-E-for-ROS2/releases/download/v1.0.0/imu_tilt_demo.mp4) |
-| **2. Closed-Loop Self-Balancing** | Real-time inverted pendulum pitch stabilization using discrete-time PID at 200 Hz on ESP32 Core 1 with anti-windup clamping and pitch safety limits. | [Watch Video (Releases)](https://github.com/Siddharth-33/WALL-E-for-ROS2/releases/download/v1.0.0/self_balancing_demo.mp4) |
-| **3. High-Speed Line Tracking** | Autonomous navigation along a high-contrast white track with front caster attachment, 5-channel TCRT5000 IR sensor array, and differential velocity steering. | [Watch Video (Releases)](https://github.com/Siddharth-33/WALL-E-for-ROS2/releases/download/v1.0.0/line_following_demo.mp4) |
+| <video height="350" src="https://github.com/Siddharth-33/WALL-E-for-ROS2/releases/download/v1.0.0/imu_tilt_demo.mp4" controls></video> | <video height="350" src="https://github.com/Siddharth-33/WALL-E-for-ROS2/releases/download/v1.0.0/self_balancing_demo.mp4" controls></video> | <video height="350" src="https://github.com/Siddharth-33/WALL-E-for-ROS2/releases/download/v1.0.0/line_following_demo.mp4" controls></video> |
+:-------------------------:|:-------------------------:|:-------------------------:
+**Zero-Latency IMU 3D Tilting**<br>[Watch / Download](https://github.com/Siddharth-33/WALL-E-for-ROS2/releases/download/v1.0.0/imu_tilt_demo.mp4) | **Closed-Loop Self-Balancing**<br>[Watch / Download](https://github.com/Siddharth-33/WALL-E-for-ROS2/releases/download/v1.0.0/self_balancing_demo.mp4) | **High-Speed Line Tracking**<br>[Watch / Download](https://github.com/Siddharth-33/WALL-E-for-ROS2/releases/download/v1.0.0/line_following_demo.mp4)
+
+</p>
+
+*All three demonstration videos are hosted on [GitHub Releases v1.0.0](https://github.com/Siddharth-33/WALL-E-for-ROS2/releases).*
 
 ---
 
-## Technical Overview
+## Technical Architecture
 
 ### 1. Embedded Control Architecture (ESP32 / FreeRTOS)
 - **Deterministic Multi-Rate Scheduling**:
