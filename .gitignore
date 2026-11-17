@@ -1,0 +1,39 @@
+# ==============================================================================
+# Git Ignore for WALL-E (ROS 2 Jazzy + ESP32 micro-ROS Project)
+# ==============================================================================
+
+# ── ROS 2 Colcon Build Artifacts ──
+build/
+install/
+log/
+**/build/
+**/install/
+**/log/
+
+# ── ESP-IDF Build Artifacts ──
+firmware/build/
+firmware/sdkconfig.old
+firmware/managed_components/
+*.bin
+*.elf
+*.map
+*.hex
+*.o
+*.a
+*.d
+
+# ── Python Bytecode & Cache ──
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+
+# ── IDEs, Editors & OS Files ──
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db

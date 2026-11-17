@@ -1,0 +1,210 @@
+<?xml version="1.0"?>
+<!--
+walle.urdf.xacro
+================
+URDF = Unified Robot Description Format
+Xacro = XML Macros (adds variables and macros to plain URDF)
+
+WHAT IS A URDF?
+  A URDF file is an XML document that describes the PHYSICAL structure
+  of your robot — its shape, size, mass, how parts connect to each other.
+
+  Think of it like a blueprint for the robot's body that ROS2 can read.
+
+WHY DO WE NEED IT?
+  1. RViz2 visualization: Without URDF, RViz can't draw your robot.
+     With URDF, you get a 3D box with spinning wheels in real-time.
+
+  2. TF (Transform) tree: ROS2 needs to know WHERE each sensor is
+     in 3D space relative to the robot center. URDF + robot_state_publisher
+     automatically broadcasts these transforms.
+
+  3. Future: Simulation (Gazebo), navigation stacks, etc. all use URDF.
+
+KEY CONCEPTS:
+  - link:  A rigid body (a physical part of the robot)
+           like: body, left_wheel, right_wheel, imu_mount
+  - joint: A connection between two links
+           like: left_wheel is attached to body and can ROTATE
+  - frame: A coordinate system attached to a link
+           like: "base_link" is the origin of the robot
+
+OUR ROBOT'S LINK TREE:
+  base_link (robot body center)
+    ├── left_wheel_link  (rotates around Y axis)
+    ├── right_wheel_link (rotates around Y axis)
+    ├── imu_link         (where MPU6050 is located)
+    └── lsa_link         (where line sensor array is located)
+
+HOW WHEEL ROTATION WORKS:
+  The ESP32 publishes /joint_states with left/right wheel positions (radians).
+  robot_state_publisher reads the URDF + joint_states and broadcasts
+  TF transforms that tell RViz exactly how to rotate each wheel in 3D.
+  Result: You see the wheels spinning in RViz in real-time!
+-->
+<robot name="walle" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- ── XACRO PROPERTIES (like variables) ─────────────────────────────────
+       Xacro lets you define named values and reuse them.
+       This makes the file easier to maintain — change wheel_radius once
+       and it updates everywhere.
+  -->
+
+  <!-- Robot body dimensions (in meters — SI units) -->
+  <xacro:property name="body_length" value="0.10"/>  <!-- 10 cm front-to-back -->
+  <xacro:property name="body_width"  value="0.08"/>  <!-- 8 cm left-to-right -->
+  <xacro:property name="body_height" value="0.06"/>  <!-- 6 cm tall -->
+
+  <!-- Wheel properties -->
+  <xacro:property name="wheel_radius" value="0.033"/>  <!-- 33mm radius (66mm TT wheel diameter) -->
+  <xacro:property name="wheel_width"  value="0.026"/>  <!-- 26mm wide standard TT yellow/black rubber wheel -->
+  <!-- Wheel positioned clearly on outer left and right sides of chassis -->
+  <!-- body_width/2 (0.04m) + wheel_width/2 (0.013m) + 0.005m clearance = 0.058m -->
+  <xacro:property name="wheel_y_offset" value="0.058"/> <!-- Distance from center to each wheel center -->
+
+  <!-- Material colors for RViz display -->
+  <material name="robot_red">
+    <color rgba="0.85 0.15 0.15 1.0"/>
+  </material>
+  <material name="wheel_black">
+    <color rgba="0.1 0.1 0.1 1.0"/>
+  </material>
+  <material name="dark_grey">
+    <color rgba="0.3 0.3 0.3 1.0"/>
+  </material>
+  <material name="blue">
+    <color rgba="0.2 0.4 0.8 1.0"/>
+  </material>
+  <material name="green">
+    <color rgba="0.2 0.8 0.2 1.0"/>
+  </material>
+
+  <!-- ── BASE LINK ─────────────────────────────────────────────────────────
+       base_link is the ROOT of the robot's TF tree.
+       All other links are positioned RELATIVE to base_link.
+       Convention: place it at the center of the wheel axle.
+  -->
+  <link name="base_link">
+    <!-- visual: what it looks like in RViz -->
+    <visual>
+      <origin xyz="0 0 ${body_height/2}" rpy="0 0 0"/>
+      <!-- xyz: offset from base_link origin (center of wheel axle) up by half body height -->
+      <!-- rpy: roll pitch yaw rotation (all 0 = no rotation) -->
+      <geometry>
+        <box size="${body_length} ${body_width} ${body_height}"/>
+        <!-- box: a rectangular prism with given length×width×height -->
+      </geometry>
+      <material name="robot_red"/>
+    </visual>
+
+    <!-- collision: physics collision shape (same as visual for simple robots) -->
+    <collision>
+      <origin xyz="0 0 ${body_height/2}" rpy="0 0 0"/>
+      <geometry>
+        <box size="${body_length} ${body_width} ${body_height}"/>
+      </geometry>
+    </collision>
+
+    <!-- inertial: mass and inertia tensor for physics simulation -->
+    <!-- Approximate values for ~0.3 kg robot body -->
+    <inertial>
+      <mass value="0.3"/>
+      <inertia ixx="0.00025" ixy="0" ixz="0" iyy="0.00034" iyz="0" izz="0.00041"/>
+    </inertial>
+  </link>
+
+  <!-- ── WHEEL XACRO MACRO ─────────────────────────────────────────────────
+       A macro is like a function — define once, reuse for left and right wheel.
+       Parameters: name (left/right), y_offset (positive/negative side)
+  -->
+  <xacro:macro name="wheel" params="name y_offset">
+
+    <!-- The wheel link itself -->
+    <link name="${name}_wheel_link">
+      <visual>
+        <!-- cylinder: radius and length -->
+        <!-- The wheel is a cylinder lying on its side (rotated 90° around X) -->
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+        <!-- rpy="${pi/2} 0 0": rotate 90° around X axis so cylinder axis = Y axis -->
+        <!-- This makes the wheel face sideways, which is correct for a driving wheel -->
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+        <material name="wheel_black"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.05"/>  <!-- 50g per wheel -->
+        <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      </inertial>
+    </link>
+
+    <!-- Joint connecting body to wheel -->
+    <!-- Using fixed joint so wheel transforms are statically calculated by robot_state_publisher -->
+    <!-- without requiring empty/missing joint_states, eliminating RViz transform errors -->
+    <joint name="${name}_wheel_joint" type="fixed">
+      <parent link="base_link"/>           <!-- Connected TO the body -->
+      <child  link="${name}_wheel_link"/>   <!-- This wheel hangs off it -->
+      <!-- Position of wheel center relative to base_link origin -->
+      <!-- x=0: wheel centered fore-aft | y=y_offset: wheel on left or right side -->
+      <!-- z=0: wheel axle at base_link height (ground level) -->
+      <origin xyz="0 ${y_offset} 0" rpy="0 0 0"/>
+    </joint>
+
+  </xacro:macro>
+
+  <!-- ── INSTANTIATE WHEELS using the macro ────────────────────────────────
+       Left wheel:  positive Y offset (left side of robot when facing forward)
+       Right wheel: negative Y offset (right side)
+  -->
+  <xacro:wheel name="left"  y_offset="${wheel_y_offset}"/>
+  <xacro:wheel name="right" y_offset="${-wheel_y_offset}"/>
+
+  <!-- ── IMU LINK ──────────────────────────────────────────────────────────
+       Represents the physical location of the MPU6050 chip on the SRA board.
+       frame_id "imu_link" is what we put in the IMU message header.
+       TF will know: imu_link is located at (0, 0, 0.1) relative to base_link.
+  -->
+  <link name="imu_link">
+    <visual>
+      <geometry>
+        <box size="0.02 0.02 0.005"/>  <!-- Tiny box representing the chip -->
+      </geometry>
+      <material name="green"/>
+    </visual>
+  </link>
+
+  <joint name="imu_joint" type="fixed">
+    <!-- "fixed" joint = no movement. IMU is rigidly attached to body. -->
+    <parent link="base_link"/>
+    <child  link="imu_link"/>
+    <!-- MPU6050 is roughly at the middle-height of the body -->
+    <origin xyz="0 0 ${body_height * 0.5}" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ── LSA LINK ───────────────────────────────────────────────────────────
+       Represents the Line Sensor Array at the bottom front of the robot.
+       frame_id "lsa_link" is what we put in the LineSensorArray message header.
+  -->
+  <link name="lsa_link">
+    <visual>
+      <geometry>
+        <box size="0.012 0.084 0.004"/>  <!-- Sensor mount bar (dark grey PCB) -->
+      </geometry>
+      <material name="dark_grey"/>
+    </visual>
+  </link>
+
+  <joint name="lsa_joint" type="fixed">
+    <parent link="base_link"/>
+    <child  link="lsa_link"/>
+    <!-- LSA is at the front-bottom of the robot, just above ground -->
+    <origin xyz="${body_length/2} 0 ${-wheel_radius + 0.01}" rpy="0 0 0"/>
+  </joint>
+
+</robot>

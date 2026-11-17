@@ -1,0 +1,21 @@
+# Default PID gains for Wall-E robot
+# These match the defaults compiled into the ESP32 firmware
+# Use the tuner_node to change them at runtime
+
+balance_controller:
+  kp: 40.0
+  ki: 0.5
+  kd: 2.0
+  target_pitch: 0.0   # degrees — the "upright" setpoint
+
+line_controller:
+  kp: 30.0
+  ki: 0.0
+  kd: 5.0
+
+# Robot modes:
+# 0 = IDLE (motors off)
+# 1 = BALANCE_ONLY (self-balancing, no line following)
+# 2 = LINE_FOLLOW (line following only — use with caster wheel)
+# 3 = BOTH (self-balancing + line following combined)
+default_mode: 0

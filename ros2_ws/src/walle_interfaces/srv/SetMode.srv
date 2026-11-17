@@ -1,0 +1,22 @@
+# SetMode.srv
+# Service to switch the robot operating mode remotely from the PC.
+# Usage from terminal:
+#   ros2 service call /set_mode walle_interfaces/srv/SetMode "{mode: 1}"
+
+# REQUEST (sent from PC to ESP32)
+# Mode to switch to:
+# 0 = IDLE         (motors off, safe to handle)
+# 1 = BALANCE_ONLY (self-balance, caster wheel OFF)
+# 2 = LINE_FOLLOW  (line following only, caster wheel ON)
+# 3 = BOTH         (balance + line follow, caster wheel OFF)
+uint8 mode
+
+---
+
+# RESPONSE (sent from ESP32 back to PC)
+# True if mode was switched successfully
+bool success
+
+# The mode the robot is now in as a string
+# e.g., "IDLE", "BALANCE_ONLY", "LINE_FOLLOW", "BOTH"
+string current_mode

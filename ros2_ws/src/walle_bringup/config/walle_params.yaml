@@ -1,0 +1,11 @@
+# Wall-E Bringup Configuration
+# =============================
+# Networking
+micro_ros:
+  agent_port: 8888              # Must match CONFIG_MICRO_ROS_AGENT_PORT in ESP32 sdkconfig
+  transport: udp4               # UDP over IPv4
+
+# Default launch options
+launch:
+  start_monitor: true           # Auto-start the terminal dashboard
+  start_rviz: false             # Don't auto-start RViz (optional visualization)

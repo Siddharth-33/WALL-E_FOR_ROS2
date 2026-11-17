@@ -1,0 +1,27 @@
+# SetPidGains.srv
+# Service to update PID gains on the ESP32 wirelessly without reflashing.
+# Usage from terminal:
+#   ros2 service call /set_pid_gains walle_interfaces/srv/SetPidGains
+#     "{controller: 'balance', kp: 40.0, ki: 0.5, kd: 2.0}"
+
+# REQUEST (sent from PC to ESP32)
+# Which PID controller to update: "balance" or "line"
+string controller
+
+# Proportional gain
+float32 kp
+
+# Integral gain
+float32 ki
+
+# Derivative gain
+float32 kd
+
+---
+
+# RESPONSE (sent from ESP32 back to PC)
+# True if gains were updated successfully
+bool success
+
+# Human-readable confirmation or error description
+string message
