@@ -129,51 +129,7 @@ graph TD
 | **Motor Driver** | Dual H-Bridge | AIN1/2, BIN1/2, PWMA/B | Hardware MCPWM @ 20 kHz |
 | **Motors** | TT DC Gearmotors (1:48) | Left & Right Drive Axles | Differential Drive, 65mm Wheels |
 | **Chassis** | Modular Acrylic / 3D Print | 100mm × 80mm × 60mm | Front Caster Attachment |
-| **Power Supply** | 2S 7.4V Li-ion (2000 mAh) | Vin to Buck Regulators (5V/3.3V) | High Discharge |
-
----
-
-## Repository Structure
-
-```
-WALL-E-for-ROS2/
-├── README.md                           # Master Technical Documentation
-├── .gitignore                          # Excludes all build artifacts & binaries
-├── firmware/                           # ESP-IDF FreeRTOS Firmware
-│   ├── CMakeLists.txt                  # Build configuration
-│   ├── sdkconfig.defaults              # Default configuration
-│   ├── sdkconfig                       # Active configuration
-│   ├── app-colcon.meta                 # micro-ROS build profile
-│   ├── main/
-│   │   ├── main.c                      # Multi-rate FreeRTOS task orchestration
-│   │   ├── balance_controller.h        # PID parameters, speed bounds, setpoint
-│   │   ├── balance_controller.c        # Inverted pendulum & line tracking math
-│   │   ├── walle_lsa.h / .c            # 5-channel ADC normalization & centroid
-│   │   ├── microros_transport.h / .c   # micro-ROS telemetry & service servers
-│   │   ├── imu_driver.h / .c           # MPU6050 sensor reading & filtering
-│   │   ├── walle_motor.h / .c          # MCPWM motor control driver
-│   │   ├── state_machine.h / .c        # Mode management logic
-│   │   └── wifi_manager.h / .c         # Wi-Fi STA connection manager
-│   └── components/                     # ESP-IDF Components (micro-ROS & SRA board)
-└── ros2_ws/                            # Host ROS 2 Workspace
-    └── src/
-        ├── walle_interfaces/           # Custom message and service definitions
-        │   ├── msg/LineSensorArray.msg # 5-channel ADC, normalized, centroid
-        │   ├── msg/BalanceTelemetry.msg# Real-time state & telemetry
-        │   ├── srv/SetPidGains.srv     # Dynamic PID tuning service
-        │   └── srv/SetMode.srv         # Runtime mode switching service
-        ├── walle_description/          # Robot URDF model & RViz configuration
-        │   ├── urdf/walle.urdf.xacro   # Parametric URDF model with wheels & sensors
-        │   ├── rviz/walle_view.rviz    # Preconfigured RViz layout
-        │   └── launch/description.launch.py # Launches robot_state_publisher
-        ├── walle_control/              # Telemetry, HUD, and OTA control
-        │   ├── tuner_node.py           # Interactive CLI tuner
-        │   ├── monitor_node.py         # Terminal telemetry dashboard
-        │   ├── lsa_visualizer_node.py  # High-contrast 3D LSA pads & live HUD
-        │   └── imu_tf_broadcaster.py   # Synchronized TF broadcaster
-        └── walle_bringup/              # System integration
-            └── launch/robot.launch.py  # Master launch file
-```
+| **Power Supply** | 3S 11.1V Li-ion (2000 mAh) | Vin to Buck Regulators (5V/3.3V) | High Discharge |
 
 ---
 
@@ -312,4 +268,3 @@ The `tuner_node` allows updating parameters on the fly without reflashing:
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
-Built with ❤️ for robotics and embedded systems enthusiasts.
